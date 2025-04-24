@@ -130,5 +130,24 @@ def result(interview_id):
     
     return render_template('result.html', interview=interview, questions=questions)
 
+@app.route('/about')
+def about():
+    """Show About Us page"""
+    return render_template('about.html')
+
+@app.route('/services')
+def services():
+    """Show Services page"""
+    return render_template('services.html')
+
+@app.route('/contact', methods=['GET', 'POST'])
+def contact():
+    """Show Contact Us page and handle form submission"""
+    if request.method == 'POST':
+        # Here you would typically handle the form submission
+        # For now, we'll just redirect back to the contact page
+        return redirect(url_for('contact'))
+    return render_template('contact.html')
+
 if __name__ == '__main__':
     app.run(debug=True)
