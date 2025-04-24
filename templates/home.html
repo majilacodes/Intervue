@@ -1,0 +1,50 @@
+{% extends "layout.html" %}
+
+{% block title %}Dashboard - AI Interview Platform{% endblock %}
+
+{% block content %}
+<section class="dashboard">
+    <div class="dashboard-header">
+        <h2>Dashboard</h2>
+        <p>Create and start your AI Mockup interview</p>
+        <a href="{{ url_for('create') }}" class="btn">+ Add New</a>
+    </div>
+    
+    <h3>Mock Interviews</h3>
+    
+    {% if interviews %}
+    <div class="card-grid">
+        {% for interview in interviews %}
+        <div class="card">
+            <h4 class="card-title">{{ interview.job_role }}</h4>
+            <p class="card-subtitle">{{ interview.job_description|truncate(100) }}</p>
+            
+            <div class="tag-list">
+                {% if interview.tech_stack %}
+                    {% for tech in interview.tech_stack.split(',') %}
+                    <span class="tag">{{ tech.strip() }}</span>
+                    {% endfor %}
+                {% endif %}
+            </div>
+            
+            <div class="card-footer">
+                <span>{{ interview.created_at.strftime('%B %d, %Y, %I:%M %p') }}</span>
+                <div class="card-actions">
+                    {% if interview.overall_score %}
+                    <a href="{{ url_for('result', interview_id=interview.id) }}" class="btn">View Results</a>
+                    {% else %}
+                    <a href="{{ url_for('interview', interview_id=interview.id, question_num=1) }}" class="btn">Continue</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty-state">
+        <p>You haven't created any mock interviews yet.</p>
+        <a href="{{ url_for('create') }}" class="btn">Create Your First Interview</a>
+    </div>
+    {% endif %}
+</section>
+{% endblock %}

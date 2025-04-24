@@ -1,0 +1,59 @@
+{% extends "layout.html" %}
+
+{% block title %}Mock Interview - {{ interview.job_role }}{% endblock %}
+
+{% block content %}
+<div class="alert alert-info">
+    <p><strong>Important Note</strong></p>
+    <p>Press "Record Answer" to begin answering the question. Once you finish the interview, you'll receive feedback comparing your responses with the ideal answers.</p>
+    <p><strong>Note:</strong> Your video is never recorded. You can disable the webcam anytime if preferred.</p>
+</div>
+
+<div class="interview-container">
+    <div class="question-navigation">
+        {% for i in range(1, total_questions + 1) %}
+        <div class="question-tab {% if i == question_num %}active{% endif %}">
+            Question #{{ i }}
+        </div>
+        {% endfor %}
+    </div>
+    
+    <div class="question-content">
+        <h3>{{ question.question_text }}</h3>
+    </div>
+    
+    <div class="answer-section">
+        <div class="video-container">
+            <video id="video-preview" autoplay muted playsinline></video>
+        </div>
+        
+        <div class="controls">
+            <label for="webcamToggle">
+                <input type="checkbox" id="webcamToggle"> Enable Camera
+            </label>
+            <button id="recordButton" class="btn" disabled>Record Answer</button>
+            <button id="stopButton" class="btn btn-secondary" disabled>Stop Recording</button>
+        </div>
+        
+        <div class="answer-preview">
+            <h4>Your Answer:</h4>
+            <div id="answer-display" class="answer-text">
+                Start recording to see your answer here...
+            </div>
+        </div>
+        
+        <form id="answerForm" method="POST" data-interview-id="{{ interview.id }}" data-question-num="{{ question_num }}">
+            <input type="hidden" name="answer" id="hiddenAnswer" value="{{ question.user_answer or '' }}">
+            <div class="btn-container">
+                <button type="submit" id="submitButton" class="btn">
+                    {% if question_num < total_questions %}Next Question{% else %}Submit Interview{% endif %}
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/interview.js') }}"></script>
+{% endblock %}

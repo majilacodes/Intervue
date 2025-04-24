@@ -1,0 +1,38 @@
+{% extends "layout.html" %}
+
+{% block title %}Create New Interview - AI Interview Platform{% endblock %}
+
+{% block content %}
+<section>
+    <h2>Create A New Mock Interview</h2>
+    
+    <div class="form-container">
+        <form method="POST" action="{{ url_for('create') }}">
+            <div class="form-group">
+                <label for="job_role">Job Role/Job Position</label>
+                <input type="text" id="job_role" name="job_role" placeholder="eg:- Full Stack Developer" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="job_description">Job Description</label>
+                <textarea id="job_description" name="job_description" placeholder="eg:- Job Description.."></textarea>
+            </div>
+            
+            <div class="form-group">
+                <label for="years_experience">Years of Experience</label>
+                <input type="text" id="years_experience" name="years_experience" placeholder="eg:- Years of Experience">
+            </div>
+            
+            <div class="form-group">
+                <label for="tech_stack">Tech Stacks</label>
+                <input type="text" id="tech_stack" name="tech_stack" placeholder="eg:- React, Angular, NextJs..">
+            </div>
+            
+            <div class="btn-container">
+                <button type="reset" class="btn btn-secondary">Reset</button>
+                <button type="submit" class="btn">Create</button>
+            </div>
+        </form>
+    </div>
+</section>
+{% endblock %}

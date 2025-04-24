@@ -1,0 +1,62 @@
+{% extends "layout.html" %}
+
+{% block title %}Interview Results - {{ interview.job_role }}{% endblock %}
+
+{% block content %}
+<div class="results-header">
+    <div>
+        <h2>Congratulations!</h2>
+        <p>Your personalized feedback is now available. Dive in to see your strengths, areas for improvement, and tips to help you ace your next interview.</p>
+    </div>
+    <a href="{{ url_for('home') }}" class="btn">Back to Dashboard</a>
+</div>
+
+<div class="score-card">
+    <h3>Your overall interview rating:</h3>
+    <div class="score-value">{{ "%.1f"|format(interview.overall_score or 0) }} / 10</div>
+    
+    <div>
+        <h4>{{ interview.job_role }}</h4>
+        <p>{{ interview.job_description }}</p>
+        
+        <div class="tag-list" style="justify-content: center;">
+            {% if interview.tech_stack %}
+                {% for tech in interview.tech_stack.split(',') %}
+                <span class="tag">{{ tech.strip() }}</span>
+                {% endfor %}
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<h3>Interview Feedback</h3>
+
+{% for question in questions %}
+<div class="question-result">
+    <div class="result-header">
+        <h4>{{ loop.index }}. {{ question.question_text }}</h4>
+        <span class="score-badge">{{ "%.1f"|format(question.score or 0) }}/10</span>
+    </div>
+    
+    <div class="answer-comparison">
+        <div>
+            <h5>Expected Answer:</h5>
+            <p>{{ question.expected_answer }}</p>
+        </div>
+        <div>
+            <h5>Your Answer:</h5>
+            <p>{{ question.user_answer }}</p>
+        </div>
+    </div>
+    
+    <div class="feedback-section">
+        <h5>Feedback:</h5>
+        <p>{{ question.feedback }}</p>
+    </div>
+</div>
+{% endfor %}
+
+<div class="btn-container" style="margin: 40px 0;">
+    <a href="{{ url_for('create') }}" class="btn">Start New Interview</a>
+</div>
+{% endblock %}

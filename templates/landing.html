@@ -1,0 +1,42 @@
+{% extends "layout.html" %}
+
+{% block title %}AI Superpower - Boost Your Interview Skills{% endblock %}
+
+{% block content %}
+<section class="hero">
+    <h1>AI Superpower</h1>
+    <h2>A better way to improve your interview chances and skills</h2>
+    <p>Boost your interview skills and increase your success rate with AI-driven insights. Discover a smarter way to prepare, practice, and stand out.</p>
+    <div>
+        <a href="{{ url_for('create') }}" class="btn">Take an Interview</a>
+    </div>
+    
+    <div class="stats" style="display: flex; justify-content: center; gap: 100px; margin-top: 50px;">
+        <div class="stat-item">
+            <h3>250k+</h3>
+            <p>Offers Received</p>
+        </div>
+        <div class="stat-item">
+            <h3>1.2M+</h3>
+            <p>Interview Aced</p>
+        </div>
+    </div>
+</section>
+
+<section class="features">
+    <div class="card-grid">
+        <div class="card">
+            <h3>AI-Powered Mock Interviews</h3>
+            <p>Practice with realistic interview questions tailored to your target role and experience level.</p>
+        </div>
+        <div class="card">
+            <h3>Detailed Feedback</h3>
+            <p>Receive personalized feedback on your answers with specific suggestions for improvement.</p>
+        </div>
+        <div class="card">
+            <h3>Track Your Progress</h3>
+            <p>Monitor your improvement over time with detailed analytics and scoring.</p>
+        </div>
+    </div>
+</section>
+{% endblock %}
