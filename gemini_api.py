@@ -96,7 +96,7 @@ def evaluate_answer(question, user_answer, job_role):
                 score_text = line.replace('Score:', '').strip()
                 score = float(score_text)
             except ValueError:
-                score = 5.0  # Default score if parsing fails
+                score = 2.0  # Default score if parsing fails
     
     # If parsing fails, use simpler approach
     if not expected_answer:

@@ -1,11 +1,9 @@
-// Global variables
+
 let mediaRecorder;
 let audioChunks = [];
 let isRecording = false;
 let stream;
 let recognition;
-
-// DOM elements
 const recordButton = document.getElementById('recordButton');
 const stopButton = document.getElementById('stopButton');
 const videoElement = document.getElementById('video-preview');
@@ -15,11 +13,9 @@ const answerForm = document.getElementById('answerForm');
 const hiddenAnswerInput = document.getElementById('hiddenAnswer');
 const webCamToggle = document.getElementById('webcamToggle');
 
-// Check if browser supports necessary APIs
 const hasGetUserMedia = !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia);
 const hasSpeechRecognition = 'webkitSpeechRecognition' in window || 'SpeechRecognition' in window;
 
-// Initialize the page
 function init() {
     if (!hasGetUserMedia) {
         alert('Your browser does not support webcam access');
@@ -31,20 +27,16 @@ function init() {
         disableSpeechFeatures();
     }
     
-    // Set up event listeners
     if (recordButton) recordButton.addEventListener('click', startRecording);
     if (stopButton) stopButton.addEventListener('click', stopRecording);
     if (webCamToggle) webCamToggle.addEventListener('change', toggleWebcam);
     if (answerForm) answerForm.addEventListener('submit', handleSubmit);
     
-    // Initially disable stop button
     if (stopButton) stopButton.disabled = true;
     
-    // Setup Speech Recognition if available
     setupSpeechRecognition();
 }
 
-// Toggle webcam on/off
 async function toggleWebcam() {
     if (webCamToggle.checked) {
         try {
@@ -69,11 +61,9 @@ async function toggleWebcam() {
     }
 }
 
-// Set up speech recognition
 function setupSpeechRecognition() {
     if (!hasSpeechRecognition) return;
     
-    // Initialize speech recognition
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     recognition = new SpeechRecognition();
     recognition.continuous = true;

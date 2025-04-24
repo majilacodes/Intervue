@@ -1,59 +1,342 @@
 {% extends "layout.html" %}
 
-{% block title %}Mock Interview - {{ interview.job_role }}{% endblock %}
+{% block title %}Dashboard - AI Interview Platform{% endblock %}
 
 {% block content %}
-<div class="alert alert-info">
-    <p><strong>Important Note</strong></p>
-    <p>Press "Record Answer" to begin answering the question. Once you finish the interview, you'll receive feedback comparing your responses with the ideal answers.</p>
-    <p><strong>Note:</strong> Your video is never recorded. You can disable the webcam anytime if preferred.</p>
-</div>
-
-<div class="interview-container">
-    <div class="question-navigation">
-        {% for i in range(1, total_questions + 1) %}
-        <div class="question-tab {% if i == question_num %}active{% endif %}">
-            Question #{{ i }}
+<section class="dashboard">
+    <div class="dashboard-header">
+        <div class="header-content">
+            <h2>Welcome to Your Interview Dashboard</h2>
+            <p class="subtitle">Practice makes perfect. Start your AI-powered mock interview journey today.</p>
+            <div class="header-actions">
+                <a href="{{ url_for('create') }}" class="btn btn-primary">
+                    <i class="fas fa-plus"></i> Create New Interview
+                </a>
+                <a href="#" class="btn btn-secondary">
+                    <i class="fas fa-question-circle"></i> How It Works
+                </a>
+            </div>
+        </div>
+        <div class="stats-container">
+            <div class="stat-card">
+                <i class="fas fa-chart-line"></i>
+                <h3>{{ interviews|length }}</h3>
+                <p>Total Interviews</p>
+            </div>
+            <div class="stat-card">
+                <i class="fas fa-check-circle"></i>
+                <h3>{{ interviews|selectattr('overall_score', 'defined')|list|length }}</h3>
+                <p>Completed</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="section-header">
+        <h3>Your Mock Interviews</h3>
+        <div class="filters">
+            <select class="filter-select">
+                <option value="all">All Interviews</option>
+                <option value="completed">Completed</option>
+                <option value="in-progress">In Progress</option>
+            </select>
+            <div class="search-box">
+                <i class="fas fa-search"></i>
+                <input type="text" placeholder="Search interviews...">
+            </div>
+        </div>
+    </div>
+    
+    {% if interviews %}
+    <div class="card-grid">
+        {% for interview in interviews %}
+        <div class="card {% if interview.overall_score %}completed{% endif %}">
+            <div class="card-header">
+                <h4 class="card-title">{{ interview.job_role }}</h4>
+                <span class="status-badge {% if interview.overall_score %}completed{% else %}in-progress{% endif %}">
+                    {% if interview.overall_score %}Completed{% else %}In Progress{% endif %}
+                </span>
+            </div>
+            <p class="card-subtitle">{{ interview.job_description|truncate(100) }}</p>
+            
+            <div class="tag-list">
+                {% if interview.tech_stack %}
+                    {% for tech in interview.tech_stack.split(',') %}
+                    <span class="tag">{{ tech.strip() }}</span>
+                    {% endfor %}
+                {% endif %}
+            </div>
+            
+            <div class="card-footer">
+                <div class="timestamp">
+                    <i class="far fa-clock"></i>
+                    <span>{{ interview.created_at.strftime('%B %d, %Y, %I:%M %p') }}</span>
+                </div>
+                <div class="card-actions">
+                    {% if interview.overall_score %}
+                    <a href="{{ url_for('result', interview_id=interview.id) }}" class="btn btn-primary">
+                        <i class="fas fa-chart-bar"></i> View Results
+                    </a>
+                    {% else %}
+                    <a href="{{ url_for('interview', interview_id=interview.id, question_num=1) }}" class="btn btn-primary">
+                        <i class="fas fa-play"></i> Continue
+                    </a>
+                    {% endif %}
+                    <button class="btn btn-icon" title="More options">
+                        <i class="fas fa-ellipsis-v"></i>
+                    </button>
+                </div>
+            </div>
         </div>
         {% endfor %}
     </div>
-    
-    <div class="question-content">
-        <h3>{{ question.question_text }}</h3>
+    {% else %}
+    <div class="empty-state">
+        <div class="empty-state-icon">
+            <i class="fas fa-clipboard-list"></i>
+        </div>
+        <h3>No Interviews Yet</h3>
+        <p>Start your journey to interview success by creating your first mock interview.</p>
+        <a href="{{ url_for('create') }}" class="btn btn-primary">
+            <i class="fas fa-plus"></i> Create Your First Interview
+        </a>
     </div>
-    
-    <div class="answer-section">
-        <div class="video-container">
-            <video id="video-preview" autoplay muted playsinline></video>
-        </div>
-        
-        <div class="controls">
-            <label for="webcamToggle">
-                <input type="checkbox" id="webcamToggle"> Enable Camera
-            </label>
-            <button id="recordButton" class="btn" disabled>Record Answer</button>
-            <button id="stopButton" class="btn btn-secondary" disabled>Stop Recording</button>
-        </div>
-        
-        <div class="answer-preview">
-            <h4>Your Answer:</h4>
-            <div id="answer-display" class="answer-text">
-                Start recording to see your answer here...
-            </div>
-        </div>
-        
-        <form id="answerForm" method="POST" data-interview-id="{{ interview.id }}" data-question-num="{{ question_num }}">
-            <input type="hidden" name="answer" id="hiddenAnswer" value="{{ question.user_answer or '' }}">
-            <div class="btn-container">
-                <button type="submit" id="submitButton" class="btn">
-                    {% if question_num < total_questions %}Next Question{% else %}Submit Interview{% endif %}
-                </button>
-            </div>
-        </form>
-    </div>
-</div>
-{% endblock %}
+    {% endif %}
+</section>
 
-{% block scripts %}
-<script src="{{ url_for('static', filename='js/interview.js') }}"></script>
+<style>
+.dashboard {
+    padding: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.dashboard-header {
+    background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+    border-radius: 1rem;
+    padding: 2rem;
+    color: white;
+    margin-bottom: 2rem;
+}
+
+.header-content {
+    margin-bottom: 1.5rem;
+}
+
+.header-content h2 {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+}
+
+.subtitle {
+    opacity: 0.9;
+    font-size: 1.1rem;
+}
+
+.header-actions {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1.5rem;
+}
+
+.stats-container {
+    display: flex;
+    gap: 1.5rem;
+}
+
+.stat-card {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 1rem;
+    border-radius: 0.5rem;
+    text-align: center;
+    flex: 1;
+}
+
+.stat-card i {
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.stat-card h3 {
+    font-size: 1.5rem;
+    margin: 0.5rem 0;
+}
+
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+
+.filters {
+    display: flex;
+    gap: 1rem;
+}
+
+.filter-select {
+    padding: 0.5rem;
+    border-radius: 0.5rem;
+    border: 1px solid #e5e7eb;
+}
+
+.search-box {
+    position: relative;
+}
+
+.search-box input {
+    padding: 0.5rem 1rem 0.5rem 2.5rem;
+    border-radius: 0.5rem;
+    border: 1px solid #e5e7eb;
+    width: 250px;
+}
+
+.search-box i {
+    position: absolute;
+    left: 0.75rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #6b7280;
+}
+
+.card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.5rem;
+}
+
+.card {
+    background: white;
+    border-radius: 1rem;
+    padding: 1.5rem;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}
+
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.status-badge {
+    padding: 0.25rem 0.75rem;
+    border-radius: 1rem;
+    font-size: 0.875rem;
+}
+
+.status-badge.completed {
+    background: #dcfce7;
+    color: #166534;
+}
+
+.status-badge.in-progress {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.tag-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin: 1rem 0;
+}
+
+.tag {
+    background: #f3f4f6;
+    padding: 0.25rem 0.75rem;
+    border-radius: 1rem;
+    font-size: 0.875rem;
+    color: #4b5563;
+}
+
+.card-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 1.5rem;
+    padding-top: 1rem;
+    border-top: 1px solid #e5e7eb;
+}
+
+.timestamp {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #6b7280;
+    font-size: 0.875rem;
+}
+
+.card-actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.btn {
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.2s;
+}
+
+.btn-primary {
+    background: #4f46e5;
+    color: white;
+}
+
+.btn-primary:hover {
+    background: #4338ca;
+}
+
+.btn-secondary {
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+}
+
+.btn-secondary:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.btn-icon {
+    padding: 0.5rem;
+    background: #f3f4f6;
+    color: #4b5563;
+}
+
+.btn-icon:hover {
+    background: #e5e7eb;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 3rem;
+    background: #f9fafb;
+    border-radius: 1rem;
+}
+
+.empty-state-icon {
+    font-size: 3rem;
+    color: #9ca3af;
+    margin-bottom: 1rem;
+}
+
+.empty-state h3 {
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+    color: #374151;
+}
+
+.empty-state p {
+    color: #6b7280;
+    margin-bottom: 1.5rem;
+}
+</style>
 {% endblock %}
